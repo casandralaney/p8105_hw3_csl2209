@@ -11,6 +11,7 @@ library(tidyverse)
 
 ```
 
+## Problem 1
 
 Load the data
 
@@ -20,3 +21,10 @@ data("instacart")
 
 ```
 
+write a short description of the dataset, 
+
+* noting the size and structure of the data
+
+* describing some key variables
+
+* giving illustrative examples of observations.
