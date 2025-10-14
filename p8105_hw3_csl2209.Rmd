@@ -283,7 +283,23 @@ Produce a reader-friendly table for the number of men and women in each educatio
 
 ```{r}
 
+accel_combined |>
+  filter(sex == c("male", "female")) |>
+  group_by(education, sex) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = sex, values_from = count)
 
+accel_combined |>
+  filter(sex == c("male", "female")) |>
+  ggplot(aes(x = age, fill = sex)) +
+  geom_histogram(position = "dodge", binwidth = 10, alpha = 1) +
+  facet_wrap(~education) +
+  labs(
+    title = "Age Distribution by Sex and Education",
+    x = "Age",
+    y = "Count",
+    fill = "Sex")
+    
 ```
 
 Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. Plot these total activities (y-axis) against age (x-axis); your plot should compare men to women and have separate panels for each education level. Include a trend line or a smooth to illustrate differences. Comment on your plot.
