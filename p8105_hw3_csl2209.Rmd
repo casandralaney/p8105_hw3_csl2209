@@ -246,11 +246,37 @@ ggsave(
 
 # Problem 3
 
-Load, tidy, merge, and otherwise organize the data sets. Your final dataset should include all originally observed variables; exclude participants less than 21 years of age, and those with missing demographic data; and encode data with reasonable variable classes (i.e. not numeric, and using factors with the ordering of tables and plots in mind).
+Load, tidy, merge, and otherwise organize the data sets. 
 
 ```{r}
+accel = read_csv("data/nhanes_accel.csv", na = c("NA", ".", "")) |>
+  janitor::clean_names() |>
+  drop_na() # exclude missing
+  
+covar = read_csv("data/nhanes_covar.csv", na = c("NA", ".", ""), skip = 4) |>
+  janitor::clean_names() |>
+  drop_na() # exclude missing
 
-
+accel_combined = 
+  accel |>
+  left_join(covar, by = "seqn") |> # merge datasets
+  select(seqn, sex, age, bmi, education, everything()) |>
+  filter(age >= 21) |> # exclude participants less than 21
+  mutate( 
+    seqn = as.factor(seqn),
+    sex = 
+      case_match(
+        sex,
+      1 ~ "male",
+      2 ~ "female"
+    ),
+    education =
+      case_match(
+        education,
+        1 ~ "Less than High School",
+        2 ~ "High School Equivalent",
+        3 ~ "More than High School"
+      ))
 ```
 
 Produce a reader-friendly table for the number of men and women in each education category, and create a visualization of the age distributions for men and women in each education category. Comment on these items.
