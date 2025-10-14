@@ -371,7 +371,7 @@ accel_combined |>
   group_by(education, sex, minute) |>
   summarize(mean_mims = mean(MIMS)) |>
   ggplot(aes(x = minute, y = mean_mims, color = sex)) +
-  geom_point(alpha = 0.5) + geom_line(size = 1, alpha = 0.5) +
+  geom_point(alpha = .5, size = 2) + geom_line(size = 1, alpha = 0.3) +
   facet_wrap(~education, ncol = 1) +
   labs(
     title = "Average 24-hour Activity by Sex and Education",
@@ -381,3 +381,6 @@ accel_combined |>
   )
 
 ```
+
+
+We see for all age groups that the total average activity increases throughout the duration of the day. The 'more than high school' group reaches the highest level of activity, while the 'high school equivalent' and the 'less than high school' are slightly lower. The 'high school equivalent' and the 'less than high school' are quite similar to one another. There does not appear to be much of a difference between gender groups. 
