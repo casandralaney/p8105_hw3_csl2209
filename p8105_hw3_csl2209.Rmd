@@ -334,6 +334,10 @@ accel_combined |>
     
 ```
 
+We see that the 'more than high school' population has the overall greatest amount of engagement across all ages (42480 females and 40320 males), with a peak in females ages 20-30. We also see that 'high school equivalent' and 'less than high school' have around similar counts of participants.
+
+
+
 Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. Plot these total activities (y-axis) against age (x-axis); your plot should compare men to women and have separate panels for each education level. Include a trend line or a smooth to illustrate differences. Comment on your plot.
 
 ```{r}
@@ -354,6 +358,10 @@ accel_combined |>
   )
 
 ```
+
+We see that the total daily activity for females is greater in the 'more than high school' and 'high school equivalent' education class. We also see that there is a steep decline in total daily activity for the 'less than high school' group with the increase in age.
+
+
 
 Accelerometer data allows the inspection activity over the course of the day. Make a three-panel plot that shows the 24-hour activity time courses for each education level and use color to indicate sex. Describe in words any patterns or conclusions you can make based on this graph; including smooth trends may help identify differences.
 
