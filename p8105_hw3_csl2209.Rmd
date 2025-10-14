@@ -31,6 +31,7 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
+library(lubridate)
 library(p8105.datasets)
 data("instacart")
 
@@ -117,6 +118,32 @@ instacart |>
  
 ```{r}
 
+zori = read_csv("data/zillow_data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv") |>
+  janitor::clean_names() |>
+  drop_na() |>
+  pivot_longer(
+    x2015_01_31:x2024_08_31,
+    names_to = "date", 
+    values_to = "zori"
+    ) |>
+    mutate(
+      date = str_remove(date, "^x"),
+      zip_code = as.factor(region_name)) |>
+  select(-region_name, -region_type, -state, -city, -state_name, -county_name, -metro)
+  
+
+zip_codes = read_csv("data/zillow_data/Zip Codes.csv") |>
+  janitor::clean_names() |>
+  mutate(
+    zip_code = as.factor(zip_code),
+    neighborhood = as.factor(neighborhood),
+    ) |>
+  select(-file_date)
+
+tidy_zillow =
+  zori |>
+  left_join(zip_codes, by = "zip_code") |>
+  select(date, zip_code, neighborhood, county, zori, state_fips, county_code, county_fips, region_id, size_rank)
 
 ```
  
@@ -124,6 +151,18 @@ instacart |>
  There are 116 months between January 2015 and August 2024. How many ZIP codes are observed 116 times? How many are observed fewer than 10 times? Why are some ZIP codes are observed rarely and others observed in each month?
  
 ```{r}
+zip_count =
+  tidy_zillow |>
+  group_by(zip_code) |>
+  summarize(n_months = n())
+
+high_count =
+  zip_count |>
+  filter(n_months == 116)
+
+low_count =
+  zip_count |>
+  filter(n_months < 10)
 
 ```
  
@@ -131,6 +170,13 @@ instacart |>
  Create a reader-friendly table showing the average rental price in each borough and year (not month). Comment on trends in this table.
  
 ```{r}
+
+tidy_zillow |>
+  mutate(year = year(ymd(date))) |>
+  group_by(county, year) |>
+  summarize(avg_rent = mean(zori)) |>
+  pivot_wider(names_from = year, values_from = avg_rent) |>
+  arrange(county)
 
 ```
  
