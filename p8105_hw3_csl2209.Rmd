@@ -151,7 +151,7 @@ tidy_zillow =
 ```
  
  
- There are 116 months between January 2015 and August 2024. How many ZIP codes are observed 116 times? How many are observed fewer than 10 times? Why are some ZIP codes are observed rarely and others observed in each month?
+ There are 116 months between January 2015 and August 2024. 
  
 ```{r}
 zip_count =
@@ -168,7 +168,14 @@ low_count =
   filter(n_months < 10)
 
 ```
- 
+
+* How many ZIP codes are observed 116 times? How many are observed fewer than 10 times? 
+
+10 ZIP codes are observed 116 times. 0 ZIP codes are observed fewer than 10 times
+
+* Why are some ZIP codes are observed rarely and others observed in each month? 
+
+The difference comes from how much real estate activity is happening for that particular ZIP code. Some ZIP codes have more real estate activity than others.
  
  Create a reader-friendly table showing the average rental price in each borough and year (not month). Comment on trends in this table.
  
@@ -186,6 +193,7 @@ tidy_zillow |>
 
 ```
  
+ The average rental price in 'New York' is consistently greater than the average rental price for 'Kings' and 'Queens' across the years. 
  
  Make a plot showing NYC Rental Prices within ZIP codes for all available years. Your plot should facilitate comparisons across boroughs. Comment on any significant elements of this plot.
 
@@ -203,7 +211,12 @@ all_years =
   )  +
   scale_x_date(
     date_breaks = "1 year")
+
+all_years
 ```
+
+Generally, we see 'New York' prices are greater than 'Queens' and 'Kings' prices. We see a stead increase in rental price over the years, but from 2021-2022, we see a sizable drop in all zip codes.
+
 
 
 Compute the average rental price within each ZIP code over each month in 2023. Make a reader-friendly plot showing the distribution of ZIP-code-level rental prices across boroughs; put differently, your plot should facilitate the comparison of the distribution of average rental prices across boroughs. Comment on this plot.
@@ -218,7 +231,7 @@ average_price =
   ggplot(aes(x = date, y = avg_zori, group = zip_code, color = county)) +
   geom_line() +
   labs(
-    title = "NYC Rental Prices by Zip Code (2023))",
+    title = "NYC Rental Prices by Zip Code across Boroughs (2023))",
     x = "Month",
     y = "Rental Price",
     color = "Borough"
@@ -226,7 +239,11 @@ average_price =
   scale_x_date(
     date_breaks = "1 month",
     date_labels = "%m")
+
+average_price
 ```
+
+We see that the average rental price stays steady throughout all boroughs, with a minor increase around August in 2023. 
 
 Combine the two previous plots into a single graphic, and export this to a results folder in your repository.
 
@@ -251,7 +268,17 @@ Load, tidy, merge, and otherwise organize the data sets.
 ```{r}
 accel = read_csv("data/nhanes_accel.csv", na = c("NA", ".", "")) |>
   janitor::clean_names() |>
-  drop_na() # exclude missing
+  drop_na() |>
+  pivot_longer(
+    cols = starts_with("min"),
+    names_to = "minute",
+    names_prefix = "minute_",
+    values_to = "MIMS"
+  ) |>
+  mutate(
+    minute = as.integer(minute),   # numeric minute
+    MIMS = as.numeric(MIMS)        # numeric activity values
+  )
   
 covar = read_csv("data/nhanes_covar.csv", na = c("NA", ".", ""), skip = 4) |>
   janitor::clean_names() |>
@@ -285,14 +312,19 @@ Produce a reader-friendly table for the number of men and women in each educatio
 
 accel_combined |>
   filter(sex == c("male", "female")) |>
-  group_by(education, sex) |>
-  summarize(count = n()) |>
-  pivot_wider(names_from = sex, values_from = count)
+  group_by(
+    education, sex) |>
+  summarize(
+    count = n()) |>
+  pivot_wider(
+    names_from = sex, 
+    values_from = count)
 
 accel_combined |>
   filter(sex == c("male", "female")) |>
   ggplot(aes(x = age, fill = sex)) +
-  geom_histogram(position = "dodge", binwidth = 10, alpha = 1) +
+  geom_histogram(
+    position = "dodge", binwidth = 10, alpha = 1) +
   facet_wrap(~education) +
   labs(
     title = "Age Distribution by Sex and Education",
@@ -306,6 +338,20 @@ Traditional analyses of accelerometer data focus on the total activity over the 
 
 ```{r}
 
+accel_combined |>
+  group_by(seqn, sex, age, education) |>
+  summarize(
+    total_mims = sum(MIMS)) |>
+  ggplot(aes(x = age, y = total_mims, color = sex)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE) +   
+  facet_wrap(~education) +                      
+  labs(
+    title = "Total Daily Activity vs Age by Sex and Education",
+    x = "Age (years)",
+    y = "Total Daily Activity (MIMS)",
+    color = "Sex"
+  )
 
 ```
 
@@ -313,5 +359,5 @@ Accelerometer data allows the inspection activity over the course of the day. Ma
 
 ```{r}
 
-```
 
+```
