@@ -276,7 +276,7 @@ accel = read_csv("data/nhanes_accel.csv", na = c("NA", ".", "")) |>
     values_to = "MIMS"
   ) |>
   mutate(
-    minute = as.integer(minute),   # numeric minute
+    minute = as.integer(MIMS),   # numeric minute
     MIMS = as.numeric(MIMS)        # numeric activity values
   )
   
@@ -367,5 +367,17 @@ Accelerometer data allows the inspection activity over the course of the day. Ma
 
 ```{r}
 
+accel_combined |>
+  group_by(education, sex, minute) |>
+  summarize(mean_mims = mean(MIMS)) |>
+  ggplot(aes(x = minute, y = mean_mims, color = sex)) +
+  geom_point(alpha = 0.5) + geom_line(size = 1, alpha = 0.5) +
+  facet_wrap(~education, ncol = 1) +
+  labs(
+    title = "Average 24-hour Activity by Sex and Education",
+    x = "Minute of Day",
+    y = "Average Activity (MIMS)",
+    color = "Sex"
+  )
 
 ```
