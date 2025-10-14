@@ -32,6 +32,7 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 library(lubridate)
+library(patchwork)
 library(p8105.datasets)
 data("instacart")
 
@@ -229,8 +230,18 @@ average_price =
 
 Combine the two previous plots into a single graphic, and export this to a results folder in your repository.
 
-```{r}
+```{r combined_plot, fig.width=11, fig.height=6}
 
+combined_plot =
+  all_years / average_price + plot_layout(guides = "collect")
+
+ggsave(
+  filename = "results/nyc_rental_combined.png",
+  plot = combined_plot,
+  width = 12,
+  height = 10,
+  dpi = 300
+)
 ```
 
 # Problem 3
